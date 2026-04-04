@@ -48,38 +48,76 @@
     </div>
 
     <!-- UI Overlay: Warning Toast -->
-    <div id="toast" class="absolute top-1/4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-full font-bold opacity-0 pointer-events-none z-50 text-xl shadow-lg shadow-red-600/50">
-        Çizim çok yavaş !
+    <div id="toast" class="absolute top-1/4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-full font-bold opacity-0 pointer-events-none z-50 text-xl shadow-lg shadow-red-600/50 transition-opacity duration-300">
+        <!-- Toast text will be injected by JS -->
     </div>
 
-    <!-- Top Right: Audio & Scores -->
+    <!-- Top Right: Audio -->
     <div class="absolute top-4 right-4 flex flex-col items-end z-20">
         <!-- Mute Button -->
         <button id="muteBtn" class="p-2 bg-gray-800 rounded-full hover:bg-gray-700 transition mb-3">
             <svg id="icon-unmuted" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
             <svg id="icon-muted" class="hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="1" x2="1" y2="23"></line></svg>
         </button>
-
-        <!-- Top 5 Scores -->
-        <div id="scoreBoard" class="bg-gray-900/80 backdrop-blur rounded-lg p-3 w-32 hidden">
-            <h3 class="text-xs text-gray-400 uppercase tracking-wider mb-2 border-b border-gray-700 pb-1">En İyi 5</h3>
-            <ul id="scoreList" class="text-sm font-mono flex flex-col gap-1">
-                <!-- Scores injected by JS -->
-            </ul>
-        </div>
     </div>
 
-    <!-- Bottom Right: Share Button -->
-    <div class="absolute bottom-6 right-6 z-20 flex flex-col items-end">
-        <div id="shareMenu" class="share-menu flex flex-col gap-2 mb-3">
-            <button onclick="share('whatsapp')" class="p-3 rounded-full bg-green-500 hover:bg-green-400 text-white shadow-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg></button>
-            <button onclick="share('telegram')" class="p-3 rounded-full bg-blue-500 hover:bg-blue-400 text-white shadow-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></button>
-            <button onclick="share('twitter')" class="p-3 rounded-full bg-black hover:bg-gray-800 text-white shadow-lg border border-gray-700"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></button>
-            <button onclick="share('facebook')" class="p-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white shadow-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103v3.328h-2.328c-2.111 0-2.312.646-2.312 2.32v1.807h5.114l-.598 3.667h-4.516v7.98h-2.686z"/></svg></button>
-        </div>
-        <button id="shareBtn" class="p-4 bg-white rounded-full text-black hover:bg-gray-200 transition shadow-lg shadow-white/20">
+    <!-- Bottom Left: Best Score -->
+    <div id="bestScoreDisplay" class="absolute bottom-6 left-6 z-20 text-2xl font-bold text-gray-400 hidden pointer-events-none drop-shadow-md">
+        Best: <span id="bestScoreText" class="text-white">0%</span>
+    </div>
+
+    <!-- Bottom Right: Main Share Button -->
+    <div class="absolute bottom-6 right-6 z-20">
+        <button id="mainShareBtn" class="p-4 bg-white rounded-full text-black hover:bg-gray-200 transition shadow-[0_0_15px_rgba(255,255,255,0.3)]">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
         </button>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="shareModalContent" class="bg-gray-900 border border-gray-700 rounded-2xl p-6 max-w-sm md:max-w-md w-full mx-4 flex flex-col items-center shadow-2xl transform scale-95 transition-transform duration-300 relative">
+            
+            <!-- Close Button -->
+            <button id="closeShareModal" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+
+            <h2 class="text-xl md:text-2xl font-bold mb-4 text-white text-center">Share your score with your friends!</h2>
+            
+            <!-- Generated Image Preview -->
+            <div class="w-full relative mb-5">
+                <img id="shareImagePreview" src="" alt="Score Preview" class="w-full rounded-xl border border-gray-700 shadow-lg">
+                <p class="text-xs text-gray-400 text-center mt-2">Your score card is ready!</p>
+            </div>
+            
+            <!-- Social Icons Grid -->
+            <div class="grid grid-cols-5 gap-3 w-full mb-4">
+                <!-- WhatsApp -->
+                <button onclick="shareScore('whatsapp')" class="flex items-center justify-center p-3 rounded-xl bg-[#25D366] hover:opacity-80 text-white transition"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg></button>
+                <!-- Telegram -->
+                <button onclick="shareScore('telegram')" class="flex items-center justify-center p-3 rounded-xl bg-[#0088cc] hover:opacity-80 text-white transition"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></button>
+                <!-- Twitter (X) -->
+                <button onclick="shareScore('twitter')" class="flex items-center justify-center p-3 rounded-xl bg-black hover:opacity-80 text-white transition border border-gray-700"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></button>
+                <!-- Facebook -->
+                <button onclick="shareScore('facebook')" class="flex items-center justify-center p-3 rounded-xl bg-[#1877F2] hover:opacity-80 text-white transition"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103v3.328h-2.328c-2.111 0-2.312.646-2.312 2.32v1.807h5.114l-.598 3.667h-4.516v7.98h-2.686z"/></svg></button>
+                <!-- LinkedIn -->
+                <button onclick="shareScore('linkedin')" class="flex items-center justify-center p-3 rounded-xl bg-[#0A66C2] hover:opacity-80 text-white transition"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></button>
+                <!-- Reddit -->
+                <button onclick="shareScore('reddit')" class="flex items-center justify-center p-3 rounded-xl bg-[#FF4500] hover:opacity-80 text-white transition"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 11.5c0-1.65-1.35-3-3-3-.96 0-1.86.48-2.42 1.24-1.64-1-3.75-1.64-6.07-1.72.08-1.1.4-3.05 1.52-3.7.72-.4 1.73-.24 3 .5C17.2 6.3 18.46 7.5 20 7.5c1.65 0 3-1.35 3-3s-1.35-3-3-3c-1.38 0-2.54.94-2.88 2.22-1.43-.72-2.64-.8-3.6-.25-1.64.94-1.95 3.47-2 4.55-2.33.08-4.45.7-6.1 1.72C4.86 8.98 3.96 8.5 3 8.5c-1.65 0-3 1.35-3 3 0 1.32.84 2.44 2.05 2.84-.03.22-.05.44-.05.66 0 3.86 4.5 7 10 7s10-3.14 10-7c0-.22-.02-.44-.05-.66 1.2-.4 2.05-1.54 2.05-2.84zM2.3 11.5c0-.4.33-.7.7-.7.4 0 .7.3.7.7 0 .4-.3.7-.7.7-.4 0-.7-.3-.7-.7zm3.7 3.5c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm10 2.8c-1.1.5-2.5.8-4 .8s-2.9-.3-4-.8c-.3-.1-.4-.5-.2-.8.1-.3.5-.4.8-.2 1 .4 2.2.6 3.4.6s2.4-.2 3.4-.6c.3-.1.7 0 .8.2.2.3.1.7-.2.8zm-.7-2.8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.7-2.8c-.4 0-.7-.3-.7-.7 0-.4.3-.7.7-.7.4 0 .7.3.7.7 0 .4-.3.7-.7.7z"/></svg></button>
+                <!-- Pinterest -->
+                <button onclick="shareScore('pinterest')" class="flex items-center justify-center p-3 rounded-xl bg-[#E60023] hover:opacity-80 text-white transition"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.951-7.252 4.184 0 7.439 2.981 7.439 6.965 0 4.156-2.617 7.502-6.257 7.502-1.222 0-2.373-.635-2.766-1.385l-.753 2.872c-.272 1.042-1.011 2.342-1.507 3.136 1.258.384 2.593.593 3.974.593 6.621 0 11.988-5.368 11.988-11.987C24.034 5.367 18.638 0 12.017 0z"/></svg></button>
+                <!-- Instagram -->
+                <button onclick="shareScore('instagram')" class="flex items-center justify-center p-3 rounded-xl bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] hover:opacity-80 text-white transition"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></button>
+                <!-- TikTok -->
+                <button onclick="shareScore('tiktok')" class="flex items-center justify-center p-3 rounded-xl bg-black hover:opacity-80 text-white transition border border-gray-700 shadow-[0_0_8px_rgba(255,0,80,0.5)]"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.78-1.15 5.54-3.33 7.36-1.37 1.15-3.18 1.83-4.98 1.78-2.8-.09-5.5-1.44-7.05-3.8-1.22-1.85-1.57-4.14-1.04-6.27.56-2.27 2.05-4.22 4.15-5.2 2.21-.99 4.81-1 7.02-.13v4.06c-1.31-.69-2.92-.81-4.26-.26-1.44.57-2.45 1.93-2.58 3.48-.15 1.55.51 3.1 1.75 4.02 1.34.98 3.23 1.09 4.67.28 1.34-.73 2.13-2.18 2.2-3.7.09-3.71.04-7.43.04-11.14-.01-2.43-.01-4.86.01-7.29z"/></svg></button>
+            </div>
+
+            <!-- Download Button -->
+            <button onclick="downloadShareImage()" class="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition flex justify-center items-center gap-2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Download Score Image
+            </button>
+        </div>
     </div>
 
     <!-- Intro Overlay -->
@@ -97,7 +135,7 @@
             <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-white drop-shadow-lg">
                 Draw a perfect circle
             </h1>
-            <p class="text-gray-400 max-w-sm">Ekrana dokun ve merkezin etrafında olabildiğince kusursuz bir daire çiz.</p>
+            <p class="text-gray-400 max-w-sm text-lg">Draw the most perfect circle possible around the center (within 5 seconds).</p>
             <button id="startBtn" class="mt-4 px-10 py-4 bg-white text-black text-2xl font-bold rounded-full hover:scale-105 hover:bg-gray-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.4)]">
                 Start
             </button>
@@ -116,10 +154,13 @@
         const muteBtn = document.getElementById('muteBtn');
         const iconUnmuted = document.getElementById('icon-unmuted');
         const iconMuted = document.getElementById('icon-muted');
-        const shareBtn = document.getElementById('shareBtn');
-        const shareMenu = document.getElementById('shareMenu');
-        const scoreBoard = document.getElementById('scoreBoard');
-        const scoreList = document.getElementById('scoreList');
+        const mainShareBtn = document.getElementById('mainShareBtn');
+        const shareModal = document.getElementById('shareModal');
+        const shareModalContent = document.getElementById('shareModalContent');
+        const closeShareModal = document.getElementById('closeShareModal');
+        const shareImagePreview = document.getElementById('shareImagePreview');
+        const bestScoreDisplay = document.getElementById('bestScoreDisplay');
+        const bestScoreText = document.getElementById('bestScoreText');
 
         // --- Game State ---
         let width, height;
@@ -128,7 +169,6 @@
         let startTime = 0;
         let drawAnimFrame;
         let isMuted = false;
-        let scores = [];
         let currentBestScore = 0;
 
         // --- Audio System (Web Audio API) ---
@@ -221,8 +261,18 @@
             ctx.clearRect(0, 0, width, height);
             ctx.beginPath();
             ctx.arc(width/2, height/2, 4, 0, Math.PI * 2);
-            ctx.fillStyle = '#333'; // Subtle center dot
+            ctx.fillStyle = '#00e5ff'; // Vibrant cyan color
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#00e5ff';
             ctx.fill();
+            ctx.shadowBlur = 0; // Reset shadow for other drawings
+        }
+
+        // --- Utility ---
+        function showToast(message) {
+            toast.innerText = message;
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 2000);
         }
 
         // --- Events ---
@@ -239,16 +289,27 @@
             if (isMuted && audioCtx) pencilGain.gain.value = 0;
         });
 
-        shareBtn.addEventListener('click', () => {
-            shareMenu.classList.toggle('active');
+        // Open Share Modal
+        mainShareBtn.addEventListener('click', () => {
+            generateShareImage();
+            shareModal.classList.remove('pointer-events-none');
+            shareModal.classList.remove('opacity-0');
+            shareModalContent.classList.remove('scale-95');
+            shareModalContent.classList.add('scale-100');
         });
 
-        // Hide share menu if clicked outside
-        document.addEventListener('click', (e) => {
-            if(!shareBtn.contains(e.target) && !shareMenu.contains(e.target)) {
-                shareMenu.classList.remove('active');
-            }
+        // Close Share Modal
+        closeShareModal.addEventListener('click', closeShareWindow);
+        shareModal.addEventListener('click', (e) => {
+            if (e.target === shareModal) closeShareWindow();
         });
+
+        function closeShareWindow() {
+            shareModal.classList.add('opacity-0');
+            shareModal.classList.add('pointer-events-none');
+            shareModalContent.classList.remove('scale-100');
+            shareModalContent.classList.add('scale-95');
+        }
 
         // Drawing Events
         canvas.addEventListener('pointerdown', startDrawing);
@@ -257,13 +318,28 @@
         canvas.addEventListener('pointercancel', stopDrawing);
 
         function startDrawing(e) {
+            const rect = canvas.getBoundingClientRect();
+            const startX = e.clientX - rect.left;
+            const startY = e.clientY - rect.top;
+            
+            // Check if starting point is too close to the center (10% of screen height)
+            const cx = width / 2;
+            const cy = height / 2;
+            const distToCenter = Math.hypot(startX - cx, startY - cy);
+            
+            if (distToCenter < height * 0.10) {
+                showToast("Please draw it bigger !");
+                return;
+            }
+
             // Ekrana dokunduğu an eskiyi silip yenisini başlat
             resultText.style.opacity = '0';
             isDrawing = true;
             points = [];
             startTime = Date.now();
             drawCenterDot();
-            addPoint(e);
+            
+            points.push({ x: startX, y: startY });
 
             if (!isMuted && audioCtx && audioCtx.state === 'running') {
                 pencilGain.gain.setTargetAtTime(0.2, audioCtx.currentTime, 0.05);
@@ -318,21 +394,20 @@
             if (isDrawing) {
                 const elapsed = Date.now() - startTime;
                 if (elapsed > 5000) {
-                    abortDrawing();
+                    abortDrawing("Drawing is very slow !");
                     return;
                 }
                 drawAnimFrame = requestAnimationFrame(loop);
             }
         }
 
-        function abortDrawing() {
+        function abortDrawing(message) {
             isDrawing = false;
             cancelAnimationFrame(drawAnimFrame);
             if (!isMuted && audioCtx) pencilGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
             
-            // Show toast
-            toast.style.opacity = '1';
-            setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+            // Show toast message if provided
+            if (message) showToast(message);
             
             // Clear screen
             setTimeout(() => { drawCenterDot(); }, 300);
@@ -407,38 +482,117 @@
             // Play specific sound
             playSoundByScore(score);
 
-            // Update Top 5 Scores
-            updateScores(score);
+            // Update Best Score
+            updateBestScore(score);
         }
 
-        function updateScores(newScore) {
-            scores.push(newScore);
-            scores.sort((a, b) => b - a); // Descending
-            scores = scores.slice(0, 5);  // Keep top 5
+        function updateBestScore(newScore) {
+            if (newScore > currentBestScore) {
+                currentBestScore = newScore;
+                bestScoreDisplay.classList.remove('hidden');
+                bestScoreText.innerText = currentBestScore.toFixed(1) + "%";
+            }
+        }
 
-            scoreBoard.classList.remove('hidden');
-            scoreList.innerHTML = '';
+        // --- Generate Share Image (Canvas Drawing) ---
+        function generateShareImage() {
+            const c = document.createElement('canvas');
+            c.width = 800;
+            c.height = 450;
+            const context = c.getContext('2d');
+
+            // 1. Draw Black Background
+            context.fillStyle = '#000000';
+            context.fillRect(0, 0, c.width, c.height);
+
+            // 2. Draw Decorative Circles (Like the intro)
+            const cx = c.width / 2;
+            const cy = c.height / 2;
+            const colors = ['#ff3b30', '#34c759', '#007aff', '#af52de'];
+            const radii = [70, 100, 130, 150];
             
-            scores.forEach((s, index) => {
-                const li = document.createElement('li');
-                li.innerText = `${index + 1}. %${s.toFixed(1)}`;
-                if (index === 0) {
-                    li.classList.add('text-yellow-400', 'font-bold', 'text-base'); // Gold for top score
-                } else {
-                    li.classList.add('text-gray-300');
-                }
-                scoreList.appendChild(li);
+            context.lineWidth = 3;
+            colors.forEach((color, i) => {
+                context.beginPath();
+                context.arc(cx, cy, radii[i], 0, Math.PI * 2);
+                context.strokeStyle = color;
+                context.stroke();
             });
+
+            // 3. Dark Overlay to make text readable
+            context.fillStyle = 'rgba(0, 0, 0, 0.75)';
+            context.fillRect(0, 0, c.width, c.height);
+
+            // 4. Draw Texts
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
             
-            currentBestScore = scores[0];
+            // Title
+            context.font = 'bold 36px sans-serif';
+            context.fillStyle = '#ffffff';
+            context.fillText('Draw a perfect circle', cx, 80);
+
+            // Subtitle
+            context.font = '24px sans-serif';
+            context.fillStyle = '#aaaaaa';
+            context.fillText('My Best Score', cx, 150);
+
+            // Big Score
+            context.font = 'bold 110px sans-serif';
+            let scoreStr = (currentBestScore || 0).toFixed(1) + '%';
+            if (currentBestScore >= 90) context.fillStyle = '#34c759';
+            else if (currentBestScore >= 70) context.fillStyle = '#ffffff';
+            else if (currentBestScore >= 50) context.fillStyle = '#ff9500';
+            else context.fillStyle = '#ff3b30';
+            context.fillText(scoreStr, cx, 230);
+
+            // Website URL
+            context.font = '20px monospace';
+            context.fillStyle = '#888888';
+            let siteUrl = window.location.hostname || 'perfect-circle.game';
+            context.fillText(siteUrl, cx, 380);
+
+            // Set the generated image to the preview element in the modal
+            shareImagePreview.src = c.toDataURL('image/png');
         }
 
-        // --- Social Share ---
-        function share(platform) {
-            let text = `Mükemmel bir daire çizdim ve %${currentBestScore ? currentBestScore.toFixed(1) : 0} puan aldım! Sen ne kadar iyisin?`;
-            let url = window.location.href;
-            let shareUrl = '';
+        function downloadShareImage() {
+            const link = document.createElement('a');
+            link.download = `perfect-circle-score-${(currentBestScore || 0).toFixed(1)}.png`;
+            link.href = shareImagePreview.src;
+            link.click();
+        }
 
+        // --- Social Share Logic ---
+        async function shareScore(platform) {
+            const text = `I drew a perfect circle and scored ${(currentBestScore || 0).toFixed(1)}%! How good are you?`;
+            const url = window.location.href;
+            
+            // Modern Mobile Share API (Native sharing with Image)
+            // Works beautifully on mobile devices to share directly to Instagram, WhatsApp, etc.
+            if (navigator.canShare) {
+                try {
+                    const response = await fetch(shareImagePreview.src);
+                    const blob = await response.blob();
+                    const file = new File([blob], 'my-score.png', { type: 'image/png' });
+                    
+                    if (navigator.canShare({ files: [file] })) {
+                         await navigator.share({
+                             title: 'Perfect Circle Score',
+                             text: text,
+                             url: url,
+                             files: [file]
+                         });
+                         closeShareWindow();
+                         return; // Successfully used native share
+                    }
+                } catch (e) {
+                    console.log("Native share fallback triggered");
+                }
+            }
+
+            // Fallback for Desktop web sharing
+            let shareUrl = '';
             switch(platform) {
                 case 'whatsapp':
                     shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + url)}`;
@@ -452,10 +606,24 @@
                 case 'telegram':
                     shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
                     break;
+                case 'linkedin':
+                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+                    break;
+                case 'reddit':
+                    shareUrl = `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`;
+                    break;
+                case 'pinterest':
+                    shareUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(url)}&description=${encodeURIComponent(text)}`;
+                    break;
+                case 'instagram':
+                case 'tiktok':
+                    // These platforms don't have web-share intents. Download image and inform user.
+                    downloadShareImage();
+                    showToast(`Image saved! Open ${platform} to post it.`);
+                    return;
             }
             
             if (shareUrl) window.open(shareUrl, '_blank');
-            shareMenu.classList.remove('active');
         }
 
     </script>
