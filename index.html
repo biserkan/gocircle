@@ -1,42 +1,126 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- Primary Meta Tags -->
     <title>Draw a Perfect Circle</title>
+    <meta name="title" content="Draw a Perfect Circle">
+    <meta name="description" content="Draw the most perfect circle possible around the center (within 5 seconds). Can you score 100%?">
+
+    <!-- Favicon (Inline SVG for bright cyan circle) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23000' stroke='%2300e5ff' stroke-width='15'/></svg>">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://drawingcircle.netlify.app/">
+    <meta property="og:title" content="Draw a Perfect Circle">
+    <meta property="og:description" content="Draw the most perfect circle possible around the center (within 5 seconds). Can you score 100%?">
+    <!-- Note: Social platforms require an absolute URL for images. You should replace this URL with an actual screenshot of your game once hosted. -->
+    <meta property="og:image" content="https://drawingcircle.netlify.app/ogimage.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://drawingcircle.netlify.app/">
+    <meta property="twitter:title" content="Draw a Perfect Circle">
+    <meta property="twitter:description" content="Draw the most perfect circle possible around the center (within 5 seconds). Can you score 100%?">
+    <meta property="twitter:image" content="https://drawingcircle.netlify.app/ogimage.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { margin: 0; overflow: hidden; background-color: #000; touch-action: none; color: white; user-select: none; }
-        #gameCanvas { display: block; width: 100vw; height: 100vh; }
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            touch-action: none;
+            color: white;
+            user-select: none;
+        }
         
+        #gameCanvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
         /* Intro Animation SVG Styles */
+        
         .circle-path {
             fill: none;
             stroke-width: 2;
             stroke-linecap: round;
             transform-origin: center;
         }
-        .anim-spin-1 { animation: spin 8s linear infinite, dash 4s ease-in-out infinite alternate; stroke: #ff3b30; }
-        .anim-spin-2 { animation: spin-reverse 10s linear infinite, dash 5s ease-in-out infinite alternate; stroke: #34c759; }
-        .anim-spin-3 { animation: spin 12s linear infinite, dash 6s ease-in-out infinite alternate; stroke: #007aff; }
-        .anim-spin-4 { animation: spin-reverse 14s linear infinite, dash 7s ease-in-out infinite alternate; stroke: #af52de; }
-
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
-        @keyframes dash {
-            0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
-            50% { stroke-dasharray: 89, 200; stroke-dashoffset: -35px; }
-            100% { stroke-dasharray: 89, 200; stroke-dashoffset: -124px; }
+        
+        .anim-spin-1 {
+            animation: spin 8s linear infinite, dash 4s ease-in-out infinite alternate;
+            stroke: #ff3b30;
         }
-
+        
+        .anim-spin-2 {
+            animation: spin-reverse 10s linear infinite, dash 5s ease-in-out infinite alternate;
+            stroke: #34c759;
+        }
+        
+        .anim-spin-3 {
+            animation: spin 12s linear infinite, dash 6s ease-in-out infinite alternate;
+            stroke: #007aff;
+        }
+        
+        .anim-spin-4 {
+            animation: spin-reverse 14s linear infinite, dash 7s ease-in-out infinite alternate;
+            stroke: #af52de;
+        }
+        
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        @keyframes spin-reverse {
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+        
+        @keyframes dash {
+            0% {
+                stroke-dasharray: 1, 200;
+                stroke-dashoffset: 0;
+            }
+            50% {
+                stroke-dasharray: 89, 200;
+                stroke-dashoffset: -35px;
+            }
+            100% {
+                stroke-dasharray: 89, 200;
+                stroke-dashoffset: -124px;
+            }
+        }
         /* Share Menu Animation */
-        .share-menu { transition: all 0.3s ease; opacity: 0; pointer-events: none; transform: translateY(10px); }
-        .share-menu.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
-
+        
+        .share-menu {
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+        }
+        
+        .share-menu.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
         /* Toast Animation */
-        #toast { transition: opacity 0.3s ease; }
+        
+        #toast {
+            transition: opacity 0.3s ease;
+        }
     </style>
 </head>
+
 <body>
 
     <!-- Canvas -->
@@ -76,20 +160,20 @@
     <!-- Share Modal -->
     <div id="shareModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
         <div id="shareModalContent" class="bg-gray-900 border border-gray-700 rounded-2xl p-6 max-w-sm md:max-w-md w-full mx-4 flex flex-col items-center shadow-2xl transform scale-95 transition-transform duration-300 relative">
-            
+
             <!-- Close Button -->
             <button id="closeShareModal" class="absolute top-4 right-4 text-gray-400 hover:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
 
             <h2 class="text-xl md:text-2xl font-bold mb-4 text-white text-center">Share your score with your friends!</h2>
-            
+
             <!-- Generated Image Preview -->
             <div class="w-full relative mb-5">
                 <img id="shareImagePreview" src="" alt="Score Preview" class="w-full rounded-xl border border-gray-700 shadow-lg">
                 <p class="text-xs text-gray-400 text-center mt-2">Your score card is ready!</p>
             </div>
-            
+
             <!-- Social Icons Grid -->
             <div class="grid grid-cols-5 gap-3 w-full mb-4">
                 <!-- WhatsApp -->
@@ -129,7 +213,7 @@
             <circle class="circle-path anim-spin-3" cx="100" cy="100" r="80" />
             <circle class="circle-path anim-spin-4" cx="100" cy="100" r="95" />
         </svg>
-        
+
         <!-- Content -->
         <div class="relative z-10 text-center flex flex-col items-center gap-8 px-4">
             <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-white drop-shadow-lg">
@@ -260,7 +344,7 @@
         function drawCenterDot() {
             ctx.clearRect(0, 0, width, height);
             ctx.beginPath();
-            ctx.arc(width/2, height/2, 4, 0, Math.PI * 2);
+            ctx.arc(width / 2, height / 2, 4, 0, Math.PI * 2);
             ctx.fillStyle = '#00e5ff'; // Vibrant cyan color
             ctx.shadowBlur = 10;
             ctx.shadowColor = '#00e5ff';
@@ -272,13 +356,17 @@
         function showToast(message) {
             toast.innerText = message;
             toast.style.opacity = '1';
-            setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+            }, 2000);
         }
 
         // --- Events ---
         startBtn.addEventListener('click', () => {
             intro.style.opacity = '0';
-            setTimeout(() => { intro.style.display = 'none'; }, 500);
+            setTimeout(() => {
+                intro.style.display = 'none';
+            }, 500);
             initAudio(); // Required to start Audio Context on user gesture
         });
 
@@ -321,12 +409,12 @@
             const rect = canvas.getBoundingClientRect();
             const startX = e.clientX - rect.left;
             const startY = e.clientY - rect.top;
-            
+
             // Check if starting point is too close to the center (10% of screen height)
             const cx = width / 2;
             const cy = height / 2;
             const distToCenter = Math.hypot(startX - cx, startY - cy);
-            
+
             if (distToCenter < height * 0.10) {
                 showToast("Please draw it bigger !");
                 return;
@@ -338,8 +426,11 @@
             points = [];
             startTime = Date.now();
             drawCenterDot();
-            
-            points.push({ x: startX, y: startY });
+
+            points.push({
+                x: startX,
+                y: startY
+            });
 
             if (!isMuted && audioCtx && audioCtx.state === 'running') {
                 pencilGain.gain.setTargetAtTime(0.2, audioCtx.currentTime, 0.05);
@@ -358,7 +449,7 @@
             if (!isDrawing) return;
             isDrawing = false;
             cancelAnimationFrame(drawAnimFrame);
-            
+
             if (!isMuted && audioCtx) {
                 pencilGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
             }
@@ -405,12 +496,14 @@
             isDrawing = false;
             cancelAnimationFrame(drawAnimFrame);
             if (!isMuted && audioCtx) pencilGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
-            
+
             // Show toast message if provided
             if (message) showToast(message);
-            
+
             // Clear screen
-            setTimeout(() => { drawCenterDot(); }, 300);
+            setTimeout(() => {
+                drawCenterDot();
+            }, 300);
         }
 
         // --- Core Algorithm ---
@@ -421,8 +514,12 @@
             }
 
             // 1. Calculate Centroid (merkez)
-            let cx = 0, cy = 0;
-            for (let p of points) { cx += p.x; cy += p.y; }
+            let cx = 0,
+                cy = 0;
+            for (let p of points) {
+                cx += p.x;
+                cy += p.y;
+            }
             cx /= points.length;
             cy /= points.length;
 
@@ -455,7 +552,7 @@
             let startP = points[0];
             let endP = points[points.length - 1];
             let gap = Math.hypot(startP.x - endP.x, startP.y - endP.y);
-            
+
             if (gap > avgRadius * 0.5) {
                 rawScore -= 50; // Heavy penalty if not closed
             }
@@ -470,7 +567,7 @@
         function showResult(score) {
             // Update UI Text
             scoreValue.innerText = score.toFixed(1) + "%";
-            
+
             // Color mapping based on score
             if (score >= 90) scoreValue.className = "drop-shadow-[0_0_15px_rgba(52,199,89,1)] text-[#34c759]";
             else if (score >= 70) scoreValue.className = "drop-shadow-[0_0_10px_rgba(255,255,255,1)] text-white";
@@ -510,7 +607,7 @@
             const cy = c.height / 2;
             const colors = ['#ff3b30', '#34c759', '#007aff', '#af52de'];
             const radii = [70, 100, 130, 150];
-            
+
             context.lineWidth = 3;
             colors.forEach((color, i) => {
                 context.beginPath();
@@ -526,7 +623,7 @@
             // 4. Draw Texts
             context.textAlign = 'center';
             context.textBaseline = 'middle';
-            
+
             // Title
             context.font = 'bold 36px sans-serif';
             context.fillStyle = '#ffffff';
@@ -567,24 +664,28 @@
         async function shareScore(platform) {
             const text = `I drew a perfect circle and scored ${(currentBestScore || 0).toFixed(1)}%! How good are you?`;
             const url = window.location.href;
-            
+
             // Modern Mobile Share API (Native sharing with Image)
             // Works beautifully on mobile devices to share directly to Instagram, WhatsApp, etc.
             if (navigator.canShare) {
                 try {
                     const response = await fetch(shareImagePreview.src);
                     const blob = await response.blob();
-                    const file = new File([blob], 'my-score.png', { type: 'image/png' });
-                    
-                    if (navigator.canShare({ files: [file] })) {
-                         await navigator.share({
-                             title: 'Perfect Circle Score',
-                             text: text,
-                             url: url,
-                             files: [file]
-                         });
-                         closeShareWindow();
-                         return; // Successfully used native share
+                    const file = new File([blob], 'my-score.png', {
+                        type: 'image/png'
+                    });
+
+                    if (navigator.canShare({
+                            files: [file]
+                        })) {
+                        await navigator.share({
+                            title: 'Perfect Circle Score',
+                            text: text,
+                            url: url,
+                            files: [file]
+                        });
+                        closeShareWindow();
+                        return; // Successfully used native share
                     }
                 } catch (e) {
                     console.log("Native share fallback triggered");
@@ -593,7 +694,7 @@
 
             // Fallback for Desktop web sharing
             let shareUrl = '';
-            switch(platform) {
+            switch (platform) {
                 case 'whatsapp':
                     shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + url)}`;
                     break;
@@ -622,10 +723,10 @@
                     showToast(`Image saved! Open ${platform} to post it.`);
                     return;
             }
-            
+
             if (shareUrl) window.open(shareUrl, '_blank');
         }
-
     </script>
 </body>
+
 </html>
