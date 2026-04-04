@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Draw a Perfect Circle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000; touch-action: none; color: white; user-select: none; }
+        #gameCanvas { display: block; width: 100vw; height: 100vh; }
+        
+        /* Intro Animation SVG Styles */
+        .circle-path {
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            transform-origin: center;
+        }
+        .anim-spin-1 { animation: spin 8s linear infinite, dash 4s ease-in-out infinite alternate; stroke: #ff3b30; }
+        .anim-spin-2 { animation: spin-reverse 10s linear infinite, dash 5s ease-in-out infinite alternate; stroke: #34c759; }
+        .anim-spin-3 { animation: spin 12s linear infinite, dash 6s ease-in-out infinite alternate; stroke: #007aff; }
+        .anim-spin-4 { animation: spin-reverse 14s linear infinite, dash 7s ease-in-out infinite alternate; stroke: #af52de; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+        @keyframes dash {
+            0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
+            50% { stroke-dasharray: 89, 200; stroke-dashoffset: -35px; }
+            100% { stroke-dasharray: 89, 200; stroke-dashoffset: -124px; }
+        }
+
+        /* Share Menu Animation */
+        .share-menu { transition: all 0.3s ease; opacity: 0; pointer-events: none; transform: translateY(10px); }
+        .share-menu.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+        /* Toast Animation */
+        #toast { transition: opacity 0.3s ease; }
+    </style>
+</head>
+<body>
+
+    <!-- Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- UI Overlay: Result Text -->
+    <div id="resultText" class="absolute inset-0 flex items-center justify-center text-5xl md:text-7xl font-bold opacity-0 transition-opacity duration-300 pointer-events-none">
+        <span id="scoreValue" class="text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"></span>
+    </div>
+
+    <!-- UI Overlay: Warning Toast -->
+    <div id="toast" class="absolute top-1/4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-full font-bold opacity-0 pointer-events-none z-50 text-xl shadow-lg shadow-red-600/50">
+        Çizim çok yavaş !
+    </div>
+
+    <!-- Top Right: Audio & Scores -->
+    <div class="absolute top-4 right-4 flex flex-col items-end z-20">
+        <!-- Mute Button -->
+        <button id="muteBtn" class="p-2 bg-gray-800 rounded-full hover:bg-gray-700 transition mb-3">
+            <svg id="icon-unmuted" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+            <svg id="icon-muted" class="hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="1" x2="1" y2="23"></line></svg>
+        </button>
+
+        <!-- Top 5 Scores -->
+        <div id="scoreBoard" class="bg-gray-900/80 backdrop-blur rounded-lg p-3 w-32 hidden">
+            <h3 class="text-xs text-gray-400 uppercase tracking-wider mb-2 border-b border-gray-700 pb-1">En İyi 5</h3>
+            <ul id="scoreList" class="text-sm font-mono flex flex-col gap-1">
+                <!-- Scores injected by JS -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Bottom Right: Share Button -->
+    <div class="absolute bottom-6 right-6 z-20 flex flex-col items-end">
+        <div id="shareMenu" class="share-menu flex flex-col gap-2 mb-3">
+            <button onclick="share('whatsapp')" class="p-3 rounded-full bg-green-500 hover:bg-green-400 text-white shadow-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg></button>
+            <button onclick="share('telegram')" class="p-3 rounded-full bg-blue-500 hover:bg-blue-400 text-white shadow-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></button>
+            <button onclick="share('twitter')" class="p-3 rounded-full bg-black hover:bg-gray-800 text-white shadow-lg border border-gray-700"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></button>
+            <button onclick="share('facebook')" class="p-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white shadow-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103v3.328h-2.328c-2.111 0-2.312.646-2.312 2.32v1.807h5.114l-.598 3.667h-4.516v7.98h-2.686z"/></svg></button>
+        </div>
+        <button id="shareBtn" class="p-4 bg-white rounded-full text-black hover:bg-gray-200 transition shadow-lg shadow-white/20">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+        </button>
+    </div>
+
+    <!-- Intro Overlay -->
+    <div id="intro" class="absolute inset-0 bg-black z-50 flex flex-col items-center justify-center transition-opacity duration-500">
+        <!-- SVG Animation Background -->
+        <svg class="absolute inset-0 w-full h-full opacity-50" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle class="circle-path anim-spin-1" cx="100" cy="100" r="40" />
+            <circle class="circle-path anim-spin-2" cx="100" cy="100" r="60" />
+            <circle class="circle-path anim-spin-3" cx="100" cy="100" r="80" />
+            <circle class="circle-path anim-spin-4" cx="100" cy="100" r="95" />
+        </svg>
+        
+        <!-- Content -->
+        <div class="relative z-10 text-center flex flex-col items-center gap-8 px-4">
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-white drop-shadow-lg">
+                Draw a perfect circle
+            </h1>
+            <p class="text-gray-400 max-w-sm">Ekrana dokun ve merkezin etrafında olabildiğince kusursuz bir daire çiz.</p>
+            <button id="startBtn" class="mt-4 px-10 py-4 bg-white text-black text-2xl font-bold rounded-full hover:scale-105 hover:bg-gray-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.4)]">
+                Start
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- Core Elements ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const intro = document.getElementById('intro');
+        const startBtn = document.getElementById('startBtn');
+        const resultText = document.getElementById('resultText');
+        const scoreValue = document.getElementById('scoreValue');
+        const toast = document.getElementById('toast');
+        const muteBtn = document.getElementById('muteBtn');
+        const iconUnmuted = document.getElementById('icon-unmuted');
+        const iconMuted = document.getElementById('icon-muted');
+        const shareBtn = document.getElementById('shareBtn');
+        const shareMenu = document.getElementById('shareMenu');
+        const scoreBoard = document.getElementById('scoreBoard');
+        const scoreList = document.getElementById('scoreList');
+
+        // --- Game State ---
+        let width, height;
+        let points = [];
+        let isDrawing = false;
+        let startTime = 0;
+        let drawAnimFrame;
+        let isMuted = false;
+        let scores = [];
+        let currentBestScore = 0;
+
+        // --- Audio System (Web Audio API) ---
+        let audioCtx;
+        let pencilNoiseNode;
+        let pencilFilter;
+        let pencilGain;
+
+        function initAudio() {
+            if (audioCtx) return;
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
+
+            // Setup Pencil Friction Sound (White Noise through Lowpass Filter)
+            const bufferSize = audioCtx.sampleRate * 2; // 2 seconds of noise
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+
+            pencilNoiseNode = audioCtx.createBufferSource();
+            pencilNoiseNode.buffer = noiseBuffer;
+            pencilNoiseNode.loop = true;
+
+            pencilFilter = audioCtx.createBiquadFilter();
+            pencilFilter.type = 'lowpass';
+            pencilFilter.frequency.value = 800; // Muffled paper sound
+
+            pencilGain = audioCtx.createGain();
+            pencilGain.gain.value = 0; // Starts silent
+
+            pencilNoiseNode.connect(pencilFilter);
+            pencilFilter.connect(pencilGain);
+            pencilGain.connect(audioCtx.destination);
+            pencilNoiseNode.start();
+        }
+
+        function playSoundByScore(score) {
+            if (isMuted || !audioCtx || score < 50) return;
+
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            osc.type = 'sine';
+            const now = audioCtx.currentTime;
+
+            if (score >= 50 && score < 70) {
+                // Motive edici küçük zil (C5)
+                osc.frequency.setValueAtTime(523.25, now);
+                gainNode.gain.setValueAtTime(0.5, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 1);
+                osc.start(now);
+                osc.stop(now + 1);
+            } else if (score >= 70 && score < 90) {
+                // Daha motive edici (E5 -> G5)
+                osc.frequency.setValueAtTime(659.25, now);
+                osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.1);
+                gainNode.gain.setValueAtTime(0.5, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 1.5);
+                osc.start(now);
+                osc.stop(now + 1.5);
+            } else if (score >= 90) {
+                // Çok başarılı zil (Arpej hissi C5 -> E5 -> G5 -> C6)
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.1);
+                osc.frequency.setValueAtTime(783.99, now + 0.2);
+                osc.frequency.setValueAtTime(1046.50, now + 0.3);
+                gainNode.gain.setValueAtTime(0.6, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 2);
+                osc.start(now);
+                osc.stop(now + 2);
+            }
+        }
+
+        // --- Resize & Setup ---
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            drawCenterDot();
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function drawCenterDot() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.beginPath();
+            ctx.arc(width/2, height/2, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#333'; // Subtle center dot
+            ctx.fill();
+        }
+
+        // --- Events ---
+        startBtn.addEventListener('click', () => {
+            intro.style.opacity = '0';
+            setTimeout(() => { intro.style.display = 'none'; }, 500);
+            initAudio(); // Required to start Audio Context on user gesture
+        });
+
+        muteBtn.addEventListener('click', () => {
+            isMuted = !isMuted;
+            iconUnmuted.classList.toggle('hidden', isMuted);
+            iconMuted.classList.toggle('hidden', !isMuted);
+            if (isMuted && audioCtx) pencilGain.gain.value = 0;
+        });
+
+        shareBtn.addEventListener('click', () => {
+            shareMenu.classList.toggle('active');
+        });
+
+        // Hide share menu if clicked outside
+        document.addEventListener('click', (e) => {
+            if(!shareBtn.contains(e.target) && !shareMenu.contains(e.target)) {
+                shareMenu.classList.remove('active');
+            }
+        });
+
+        // Drawing Events
+        canvas.addEventListener('pointerdown', startDrawing);
+        canvas.addEventListener('pointermove', draw);
+        canvas.addEventListener('pointerup', stopDrawing);
+        canvas.addEventListener('pointercancel', stopDrawing);
+
+        function startDrawing(e) {
+            // Ekrana dokunduğu an eskiyi silip yenisini başlat
+            resultText.style.opacity = '0';
+            isDrawing = true;
+            points = [];
+            startTime = Date.now();
+            drawCenterDot();
+            addPoint(e);
+
+            if (!isMuted && audioCtx && audioCtx.state === 'running') {
+                pencilGain.gain.setTargetAtTime(0.2, audioCtx.currentTime, 0.05);
+            }
+
+            loop(); // Start timer check
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            addPoint(e);
+            renderPath();
+        }
+
+        function stopDrawing(e) {
+            if (!isDrawing) return;
+            isDrawing = false;
+            cancelAnimationFrame(drawAnimFrame);
+            
+            if (!isMuted && audioCtx) {
+                pencilGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
+            }
+
+            evaluateCircle();
+        }
+
+        function addPoint(e) {
+            const rect = canvas.getBoundingClientRect();
+            points.push({
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            });
+        }
+
+        function renderPath() {
+            drawCenterDot();
+            if (points.length < 2) return;
+
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+        }
+
+        function loop() {
+            if (isDrawing) {
+                const elapsed = Date.now() - startTime;
+                if (elapsed > 5000) {
+                    abortDrawing();
+                    return;
+                }
+                drawAnimFrame = requestAnimationFrame(loop);
+            }
+        }
+
+        function abortDrawing() {
+            isDrawing = false;
+            cancelAnimationFrame(drawAnimFrame);
+            if (!isMuted && audioCtx) pencilGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
+            
+            // Show toast
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+            
+            // Clear screen
+            setTimeout(() => { drawCenterDot(); }, 300);
+        }
+
+        // --- Core Algorithm ---
+        function evaluateCircle() {
+            if (points.length < 15) {
+                drawCenterDot(); // Too short to be a circle
+                return;
+            }
+
+            // 1. Calculate Centroid (merkez)
+            let cx = 0, cy = 0;
+            for (let p of points) { cx += p.x; cy += p.y; }
+            cx /= points.length;
+            cy /= points.length;
+
+            // 2. Calculate average radius & standard deviation
+            let radii = [];
+            let avgRadius = 0;
+            for (let p of points) {
+                let r = Math.hypot(p.x - cx, p.y - cy);
+                radii.push(r);
+                avgRadius += r;
+            }
+            avgRadius /= points.length;
+
+            if (avgRadius < 20) {
+                drawCenterDot(); // Drawn too small
+                return;
+            }
+
+            let variance = 0;
+            for (let r of radii) {
+                variance += Math.pow(r - avgRadius, 2);
+            }
+            let stdDev = Math.sqrt(variance / points.length);
+
+            // 3. Base Score Calculation
+            // Lower standard deviation relative to radius means a better circle.
+            let rawScore = 100 - ((stdDev / avgRadius) * 250);
+
+            // 4. Check if loop is closed
+            let startP = points[0];
+            let endP = points[points.length - 1];
+            let gap = Math.hypot(startP.x - endP.x, startP.y - endP.y);
+            
+            if (gap > avgRadius * 0.5) {
+                rawScore -= 50; // Heavy penalty if not closed
+            }
+
+            // Normalize
+            let finalScore = Math.max(0, Math.min(100, rawScore));
+            finalScore = Math.round(finalScore * 10) / 10;
+
+            showResult(finalScore);
+        }
+
+        function showResult(score) {
+            // Update UI Text
+            scoreValue.innerText = score.toFixed(1) + "%";
+            
+            // Color mapping based on score
+            if (score >= 90) scoreValue.className = "drop-shadow-[0_0_15px_rgba(52,199,89,1)] text-[#34c759]";
+            else if (score >= 70) scoreValue.className = "drop-shadow-[0_0_10px_rgba(255,255,255,1)] text-white";
+            else if (score >= 50) scoreValue.className = "drop-shadow-[0_0_10px_rgba(255,149,0,1)] text-[#ff9500]";
+            else scoreValue.className = "drop-shadow-[0_0_10px_rgba(255,59,48,1)] text-[#ff3b30]";
+
+            resultText.style.opacity = '1';
+
+            // Play specific sound
+            playSoundByScore(score);
+
+            // Update Top 5 Scores
+            updateScores(score);
+        }
+
+        function updateScores(newScore) {
+            scores.push(newScore);
+            scores.sort((a, b) => b - a); // Descending
+            scores = scores.slice(0, 5);  // Keep top 5
+
+            scoreBoard.classList.remove('hidden');
+            scoreList.innerHTML = '';
+            
+            scores.forEach((s, index) => {
+                const li = document.createElement('li');
+                li.innerText = `${index + 1}. %${s.toFixed(1)}`;
+                if (index === 0) {
+                    li.classList.add('text-yellow-400', 'font-bold', 'text-base'); // Gold for top score
+                } else {
+                    li.classList.add('text-gray-300');
+                }
+                scoreList.appendChild(li);
+            });
+            
+            currentBestScore = scores[0];
+        }
+
+        // --- Social Share ---
+        function share(platform) {
+            let text = `Mükemmel bir daire çizdim ve %${currentBestScore ? currentBestScore.toFixed(1) : 0} puan aldım! Sen ne kadar iyisin?`;
+            let url = window.location.href;
+            let shareUrl = '';
+
+            switch(platform) {
+                case 'whatsapp':
+                    shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + url)}`;
+                    break;
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+                    break;
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+                    break;
+                case 'telegram':
+                    shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+                    break;
+            }
+            
+            if (shareUrl) window.open(shareUrl, '_blank');
+            shareMenu.classList.remove('active');
+        }
+
+    </script>
+</body>
+</html>
