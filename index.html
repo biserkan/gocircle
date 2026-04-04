@@ -602,22 +602,34 @@
             context.fillStyle = '#000000';
             context.fillRect(0, 0, c.width, c.height);
 
-            // 2. Draw Decorative Circles (Like the intro)
+            // 2. Draw Decorative Circles with Glow
             const cx = c.width / 2;
             const cy = c.height / 2;
             const colors = ['#ff3b30', '#34c759', '#007aff', '#af52de'];
-            const radii = [70, 100, 130, 150];
+            const radii = [80, 115, 150, 185]; // Daireleri biraz daha genişlettim
 
-            context.lineWidth = 3;
+            context.lineWidth = 5; // Çizgileri kalınlaştırdım
             colors.forEach((color, i) => {
                 context.beginPath();
                 context.arc(cx, cy, radii[i], 0, Math.PI * 2);
                 context.strokeStyle = color;
+
+                // Glow (parlama) efekti
+                context.shadowBlur = 15;
+                context.shadowColor = color;
+                context.stroke();
+
+                // Parlamayı sıfırlayıp ana çizgiyi bir kez daha çizerek belirginleştir
+                context.shadowBlur = 0;
                 context.stroke();
             });
 
-            // 3. Dark Overlay to make text readable
-            context.fillStyle = 'rgba(0, 0, 0, 0.75)';
+            // 3. Radial Gradient Overlay (Merkez koyu, kenarlar şeffaf)
+            const gradient = context.createRadialGradient(cx, cy, 0, cx, cy, c.width / 1.5);
+            gradient.addColorStop(0, 'rgba(0, 0, 0, 0.85)'); // Yazıların arkası koyu
+            gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.4)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0.1)'); // Kenarlar şeffaf
+            context.fillStyle = gradient;
             context.fillRect(0, 0, c.width, c.height);
 
             // 4. Draw Texts
@@ -627,27 +639,32 @@
             // Title
             context.font = 'bold 36px sans-serif';
             context.fillStyle = '#ffffff';
-            context.fillText('Draw a perfect circle', cx, 80);
+            context.fillText('Draw a perfect circle', cx, 70);
 
             // Subtitle
             context.font = '24px sans-serif';
             context.fillStyle = '#aaaaaa';
-            context.fillText('My Best Score', cx, 150);
+            context.fillText('My Best Score', cx, 140);
 
             // Big Score
-            context.font = 'bold 110px sans-serif';
+            context.font = 'bold 120px sans-serif'; // Skoru da biraz büyüttüm
             let scoreStr = (currentBestScore || 0).toFixed(1) + '%';
             if (currentBestScore >= 90) context.fillStyle = '#34c759';
             else if (currentBestScore >= 70) context.fillStyle = '#ffffff';
             else if (currentBestScore >= 50) context.fillStyle = '#ff9500';
             else context.fillStyle = '#ff3b30';
+
+            // Skora hafif bir gölge ekleyerek öne çıkmasını sağlayalım
+            context.shadowBlur = 20;
+            context.shadowColor = context.fillStyle;
             context.fillText(scoreStr, cx, 230);
+            context.shadowBlur = 0; // Gölgeyi sıfırla
 
             // Website URL
             context.font = '20px monospace';
             context.fillStyle = '#888888';
             let siteUrl = window.location.hostname || 'perfect-circle.game';
-            context.fillText(siteUrl, cx, 380);
+            context.fillText(siteUrl, cx, 390);
 
             // Set the generated image to the preview element in the modal
             shareImagePreview.src = c.toDataURL('image/png');
