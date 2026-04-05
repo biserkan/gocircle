@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
+    
     <!-- Primary Meta Tags -->
-    <title>Perfect Circle Game</title>
+    <title>Draw a Perfect Circle Game</title>
     <meta name="title" content="Draw a Perfect Circle">
     <meta name="description" content="Draw the most perfect circle possible around the center (within 5 seconds). Can you score 100%?">
 
@@ -29,103 +28,37 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #000;
-            touch-action: none;
-            color: white;
-            user-select: none;
-        }
+        body { margin: 0; overflow: hidden; background-color: #000; touch-action: none; color: white; user-select: none; }
+        #gameCanvas { display: block; width: 100vw; height: 100vh; }
         
-        #gameCanvas {
-            display: block;
-            width: 100vw;
-            height: 100vh;
-        }
         /* Intro Animation SVG Styles */
-        
-        .circle-path {
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            transform-origin: center;
-        }
-        
-        .anim-spin-1 {
-            animation: spin 8s linear infinite, dash 4s ease-in-out infinite alternate;
-            stroke: #ff3b30;
-        }
-        
-        .anim-spin-2 {
-            animation: spin-reverse 10s linear infinite, dash 5s ease-in-out infinite alternate;
-            stroke: #34c759;
-        }
-        
-        .anim-spin-3 {
-            animation: spin 12s linear infinite, dash 6s ease-in-out infinite alternate;
-            stroke: #007aff;
-        }
-        
-        .anim-spin-4 {
-            animation: spin-reverse 14s linear infinite, dash 7s ease-in-out infinite alternate;
-            stroke: #af52de;
-        }
-        
-        @keyframes spin {
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-        
-        @keyframes spin-reverse {
-            100% {
-                transform: rotate(-360deg);
-            }
-        }
-        
+        .circle-path { fill: none; stroke-width: 2; stroke-linecap: round; transform-origin: center; }
+        .anim-spin-1 { animation: spin 8s linear infinite, dash 4s ease-in-out infinite alternate; stroke: #ff3b30; }
+        .anim-spin-2 { animation: spin-reverse 10s linear infinite, dash 5s ease-in-out infinite alternate; stroke: #34c759; }
+        .anim-spin-3 { animation: spin 12s linear infinite, dash 6s ease-in-out infinite alternate; stroke: #007aff; }
+        .anim-spin-4 { animation: spin-reverse 14s linear infinite, dash 7s ease-in-out infinite alternate; stroke: #af52de; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
         @keyframes dash {
-            0% {
-                stroke-dasharray: 1, 200;
-                stroke-dashoffset: 0;
-            }
-            50% {
-                stroke-dasharray: 89, 200;
-                stroke-dashoffset: -35px;
-            }
-            100% {
-                stroke-dasharray: 89, 200;
-                stroke-dashoffset: -124px;
-            }
+            0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
+            50% { stroke-dasharray: 89, 200; stroke-dashoffset: -35px; }
+            100% { stroke-dasharray: 89, 200; stroke-dashoffset: -124px; }
         }
+
         /* Result Text Pop Animation */
-        
         @keyframes pop {
-            0% {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            70% {
-                transform: scale(1.1);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
         }
-        
-        .animate-pop {
-            animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
+        .animate-pop { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
         /* Cosmic Aura Animation */
-        
         #cosmicAura {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 150vmin;
-            height: 150vmin;
+            top: 50%; left: 50%;
+            width: 150vmin; height: 150vmin;
             background: radial-gradient(circle, rgba(52, 199, 89, 0.25) 0%, rgba(52, 199, 89, 0) 60%);
             transform: translate(-50%, -50%) scale(0.8);
             opacity: 0;
@@ -134,30 +67,19 @@
             transition: opacity 1.5s ease-in-out;
             mix-blend-mode: screen;
         }
-        
         #cosmicAura.active {
             opacity: 1;
             animation: pulseAura 4s infinite alternate ease-in-out;
         }
-        
         @keyframes pulseAura {
-            0% {
-                transform: translate(-50%, -50%) scale(0.8);
-                opacity: 0.6;
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(1.1);
-                opacity: 1;
-            }
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; }
+            100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
         }
+
         /* Toast Animation */
-        
-        #toast {
-            transition: opacity 0.3s ease;
-        }
+        #toast { transition: opacity 0.3s ease; }
     </style>
 </head>
-
 <body>
 
     <!-- Canvas -->
@@ -193,29 +115,30 @@
         Best: <span id="bestScoreText" class="text-white">0%</span>
     </div>
 
-    <!-- Bottom Right: Main Share Button -->
+    <!-- Bottom Right: Main Share Button with Text -->
     <div class="absolute bottom-6 right-6 z-20">
-        <button id="mainShareBtn" class="p-4 bg-white rounded-full text-black hover:bg-gray-200 transition shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+        <button id="mainShareBtn" class="px-6 py-4 bg-white rounded-full text-black hover:bg-gray-200 transition shadow-[0_0_15px_rgba(255,255,255,0.3)] flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            <span class="font-bold whitespace-nowrap">Share your score !</span>
         </button>
     </div>
 
     <!-- Share Modal -->
     <div id="shareModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
         <div id="shareModalContent" class="bg-gray-900 border border-gray-700 rounded-2xl p-6 max-w-sm md:max-w-md w-full mx-4 flex flex-col items-center shadow-2xl transform scale-95 transition-transform duration-300 relative">
-
+            
             <button id="closeShareModal" class="absolute top-4 right-4 text-gray-400 hover:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
 
             <h2 class="text-lg font-bold mb-4 mt-2 px-6 text-white text-center leading-tight">Share your score with your friends!</h2>
-
+            
             <!-- Generated Image Preview -->
             <div class="w-full relative mb-5">
                 <img id="shareImagePreview" src="" alt="Score Preview" class="w-full rounded-xl border border-gray-700 shadow-lg">
                 <p class="text-xs text-gray-400 text-center mt-2">Your score card is ready!</p>
             </div>
-
+            
             <!-- Social Icons Grid (10 Platforms) -->
             <div class="grid grid-cols-5 gap-3 w-full mb-4">
                 <button onclick="shareScore('whatsapp')" class="flex items-center justify-center p-3 rounded-xl bg-[#25D366] hover:opacity-80 text-white transition"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg></button>
@@ -246,7 +169,7 @@
             <circle class="circle-path anim-spin-3" cx="100" cy="100" r="80" />
             <circle class="circle-path anim-spin-4" cx="100" cy="100" r="95" />
         </svg>
-
+        
         <!-- Content -->
         <div class="relative z-10 text-center flex flex-col items-center gap-8 px-4">
             <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-white drop-shadow-lg">
@@ -308,7 +231,7 @@
                         bestPoints = parsed.points;
                         bestCx = parsed.cx;
                         bestCy = parsed.cy;
-
+                        
                         bestScoreDisplay.classList.remove('hidden');
                         bestScoreText.innerText = currentBestScore.toFixed(1) + "%";
                     } else {
@@ -319,7 +242,7 @@
                 }
             }
         }
-
+        
         loadDailyBest();
 
         // --- Audio System (Web Audio API) ---
@@ -333,7 +256,7 @@
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             audioCtx = new AudioContext();
 
-            const bufferSize = audioCtx.sampleRate * 2;
+            const bufferSize = audioCtx.sampleRate * 2; 
             const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
             const output = noiseBuffer.getChannelData(0);
             for (let i = 0; i < bufferSize; i++) {
@@ -346,10 +269,10 @@
 
             pencilFilter = audioCtx.createBiquadFilter();
             pencilFilter.type = 'lowpass';
-            pencilFilter.frequency.value = 800;
+            pencilFilter.frequency.value = 800; 
 
             pencilGain = audioCtx.createGain();
-            pencilGain.gain.value = 0;
+            pencilGain.gain.value = 0; 
 
             pencilNoiseNode.connect(pencilFilter);
             pencilFilter.connect(pencilGain);
@@ -407,30 +330,26 @@
         function drawCenterDot() {
             ctx.clearRect(0, 0, width, height);
             ctx.beginPath();
-            ctx.arc(width / 2, height / 2, 4, 0, Math.PI * 2);
-            ctx.fillStyle = '#00e5ff';
+            ctx.arc(width/2, height/2, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#00e5ff'; 
             ctx.shadowBlur = 10;
             ctx.shadowColor = '#00e5ff';
             ctx.fill();
-            ctx.shadowBlur = 0;
+            ctx.shadowBlur = 0; 
         }
 
         // --- Utility ---
         function showToast(message) {
             toast.innerText = message;
             toast.style.opacity = '1';
-            setTimeout(() => {
-                toast.style.opacity = '0';
-            }, 2000);
+            setTimeout(() => { toast.style.opacity = '0'; }, 2000);
         }
 
         // --- Events ---
         startBtn.addEventListener('click', () => {
             intro.style.opacity = '0';
-            setTimeout(() => {
-                intro.style.display = 'none';
-            }, 500);
-            initAudio();
+            setTimeout(() => { intro.style.display = 'none'; }, 500);
+            initAudio(); 
         });
 
         muteBtn.addEventListener('click', () => {
@@ -447,10 +366,10 @@
         });
 
         mainShareBtn.addEventListener('click', () => {
-            if (isReplaying || isDrawing) return;
+            if(isReplaying || isDrawing) return; 
 
-            generateShareImage();
-
+            generateShareImage(); 
+            
             shareModal.classList.remove('pointer-events-none');
             shareModal.classList.remove('opacity-0');
             shareModalContent.classList.remove('scale-95');
@@ -476,16 +395,16 @@
         canvas.addEventListener('pointercancel', stopDrawing);
 
         function startDrawing(e) {
-            if (isReplaying) return;
+            if (isReplaying) return; 
 
             const rect = canvas.getBoundingClientRect();
             const startX = e.clientX - rect.left;
             const startY = e.clientY - rect.top;
-
+            
             const cx = width / 2;
             const cy = height / 2;
             const distToCenter = Math.hypot(startX - cx, startY - cy);
-
+            
             if (distToCenter < height * 0.10) {
                 showToast("Please draw it bigger !");
                 return;
@@ -494,22 +413,19 @@
             resultText.style.opacity = '0';
             scoreValue.classList.remove('animate-pop');
             cosmicAura.classList.remove('active'); // Yeni çizimde aurayı gizle
-
+            
             isDrawing = true;
             points = [];
             startTime = Date.now();
             drawCenterDot();
-
-            points.push({
-                x: startX,
-                y: startY
-            });
+            
+            points.push({ x: startX, y: startY });
 
             if (!isMuted && audioCtx && audioCtx.state === 'running') {
                 pencilGain.gain.setTargetAtTime(0.08, audioCtx.currentTime, 0.05); // Hafif ses
             }
 
-            loop();
+            loop(); 
         }
 
         function draw(e) {
@@ -526,7 +442,7 @@
             if (!isDrawing) return;
             isDrawing = false;
             cancelAnimationFrame(drawAnimFrame);
-
+            
             if (!isMuted && audioCtx) {
                 pencilGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
             }
@@ -565,26 +481,20 @@
             isDrawing = false;
             cancelAnimationFrame(drawAnimFrame);
             if (!isMuted && audioCtx) pencilGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
-
+            
             if (message) showToast(message);
-            setTimeout(() => {
-                drawCenterDot();
-            }, 300);
+            setTimeout(() => { drawCenterDot(); }, 300);
         }
 
         // --- Core Algorithm ---
         function evaluateCircle() {
             if (points.length < 15) {
-                drawCenterDot();
+                drawCenterDot(); 
                 return;
             }
 
-            let cx = 0,
-                cy = 0;
-            for (let p of points) {
-                cx += p.x;
-                cy += p.y;
-            }
+            let cx = 0, cy = 0;
+            for (let p of points) { cx += p.x; cy += p.y; }
             cx /= points.length;
             cy /= points.length;
 
@@ -598,7 +508,7 @@
             avgRadius /= points.length;
 
             if (avgRadius < 20) {
-                drawCenterDot();
+                drawCenterDot(); 
                 return;
             }
 
@@ -613,9 +523,9 @@
             let startP = points[0];
             let endP = points[points.length - 1];
             let gap = Math.hypot(startP.x - endP.x, startP.y - endP.y);
-
+            
             if (gap > avgRadius * 0.5) {
-                rawScore -= 50;
+                rawScore -= 50; 
             }
 
             let finalScore = Math.max(0, Math.min(100, rawScore));
@@ -630,18 +540,16 @@
 
         function startReplay(finalScore) {
             isReplaying = true;
-            drawCenterDot();
-
+            drawCenterDot(); 
+            
             let replayPoints = [];
             let pointIndex = 0;
-            const replaySpeed = Math.max(1, Math.floor(points.length / 60));
-
-            // Tekrar esnasında ses tamamen kapalı. Sadece çizim oynatılır.
+            const replaySpeed = Math.max(1, Math.floor(points.length / 60)); 
 
             function drawNextFrame() {
                 if (pointIndex < points.length) {
-                    for (let i = 0; i < replaySpeed; i++) {
-                        if (points[pointIndex]) {
+                    for(let i=0; i<replaySpeed; i++) {
+                        if(points[pointIndex]) {
                             replayPoints.push(points[pointIndex]);
                             pointIndex++;
                         }
@@ -659,11 +567,12 @@
 
         function showResult(score) {
             scoreValue.innerText = score.toFixed(1) + "%";
-
+            
             if (score >= 90) {
                 scoreValue.className = "drop-shadow-[0_0_15px_rgba(52,199,89,1)] text-[#34c759]";
-                cosmicAura.classList.add('active'); // Mükemmel skor! Aurayı göster.
-            } else if (score >= 70) scoreValue.className = "drop-shadow-[0_0_10px_rgba(255,255,255,1)] text-white";
+                cosmicAura.classList.add('active'); 
+            }
+            else if (score >= 70) scoreValue.className = "drop-shadow-[0_0_10px_rgba(255,255,255,1)] text-white";
             else if (score >= 50) scoreValue.className = "drop-shadow-[0_0_10px_rgba(255,149,0,1)] text-[#ff9500]";
             else scoreValue.className = "drop-shadow-[0_0_10px_rgba(255,59,48,1)] text-[#ff3b30]";
 
@@ -677,10 +586,10 @@
         function updateBestScore(newScore) {
             if (newScore > currentBestScore) {
                 currentBestScore = newScore;
-                bestPoints = [...points];
+                bestPoints = [...points]; 
                 bestCx = width / 2;
                 bestCy = height / 2;
-
+                
                 bestScoreDisplay.classList.remove('hidden');
                 bestScoreText.innerText = currentBestScore.toFixed(1) + "%";
 
@@ -707,38 +616,34 @@
 
             const cx = c.width / 2;
             const cy = c.height / 2;
-
-            const textCx = 240;
-            const shapeCx = 560;
-            const contentCy = 230;
+            
+            const textCx = 240;  
+            const shapeCx = 560; 
+            const contentCy = 230; 
 
             if (currentBestScore >= 90) {
-                // PREMIUM GÖRSEL ARKA PLAN (Kozmik Aura & Yıldız Tozu)
                 const bgGrad = context.createRadialGradient(cx, cy, 0, cx, cy, c.width);
-                bgGrad.addColorStop(0, '#0a1a0f'); // Çok koyu yeşil bir derinlik
-                bgGrad.addColorStop(1, '#000000');
+                bgGrad.addColorStop(0, '#0a1a0f'); 
+                bgGrad.addColorStop(1, '#000000'); 
                 context.fillStyle = bgGrad;
                 context.fillRect(0, 0, c.width, c.height);
 
-                // Şeklin arkasındaki devasa Kozmik Işık
                 const auraGrad = context.createRadialGradient(shapeCx, contentCy, 0, shapeCx, contentCy, 300);
                 auraGrad.addColorStop(0, 'rgba(52, 199, 89, 0.35)');
                 auraGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
                 context.fillStyle = auraGrad;
                 context.fillRect(0, 0, c.width, c.height);
 
-                // Yıldız tozu efekti (Küçük parlak noktalar)
-                for (let i = 0; i < 80; i++) {
+                for(let i = 0; i < 80; i++) {
                     context.beginPath();
                     context.arc(Math.random() * c.width, Math.random() * c.height, Math.random() * 1.5 + 0.5, 0, Math.PI * 2);
                     context.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.1})`;
                     context.fill();
                 }
             } else {
-                // STANDART GÖRSEL ARKA PLAN
                 const gradient = context.createRadialGradient(cx, cy, 0, cx, cy, c.width);
-                gradient.addColorStop(0, '#1a1a1a');
-                gradient.addColorStop(1, '#000000');
+                gradient.addColorStop(0, '#1a1a1a'); 
+                gradient.addColorStop(1, '#000000'); 
                 context.fillStyle = gradient;
                 context.fillRect(0, 0, c.width, c.height);
             }
@@ -749,23 +654,22 @@
                     let r = Math.hypot(p.x - bestCx, p.y - bestCy);
                     if (r > maxR) maxR = r;
                 }
-
+                
                 const scale = maxR > 0 ? 140 / maxR : 1;
 
                 context.beginPath();
                 context.lineCap = 'round';
                 context.lineJoin = 'round';
                 context.lineWidth = 6;
-                // %90 üzeriyse şekil de yeşilimsi parlasın, altındaysa standart camgöbeği
-                context.strokeStyle = currentBestScore >= 90 ? '#34c759' : '#00e5ff';
-
+                context.strokeStyle = currentBestScore >= 90 ? '#34c759' : '#00e5ff'; 
+                
                 context.shadowBlur = currentBestScore >= 90 ? 25 : 15;
                 context.shadowColor = currentBestScore >= 90 ? '#34c759' : '#00e5ff';
 
                 for (let i = 0; i < bestPoints.length; i++) {
                     let dx = bestPoints[i].x - bestCx;
                     let dy = bestPoints[i].y - bestCy;
-
+                    
                     let sx = shapeCx + dx * scale;
                     let sy = contentCy + dy * scale;
 
@@ -773,7 +677,7 @@
                     else context.lineTo(sx, sy);
                 }
                 context.stroke();
-
+                
                 context.shadowBlur = 0;
                 context.strokeStyle = '#ffffff';
                 context.lineWidth = 2;
@@ -787,7 +691,7 @@
             } else {
                 const colors = ['#ff3b30', '#34c759', '#007aff', '#af52de'];
                 const radii = [50, 80, 110, 140];
-
+                
                 context.lineWidth = 5;
                 colors.forEach((color, i) => {
                     context.beginPath();
@@ -796,14 +700,14 @@
                     context.shadowBlur = 15;
                     context.shadowColor = color;
                     context.stroke();
-                    context.shadowBlur = 0;
+                    context.shadowBlur = 0; 
                     context.stroke();
                 });
             }
 
             context.textAlign = 'center';
             context.textBaseline = 'middle';
-
+            
             context.shadowBlur = 8;
             context.shadowColor = '#000000';
 
@@ -821,11 +725,11 @@
             else if (currentBestScore >= 70) context.fillStyle = '#ffffff';
             else if (currentBestScore >= 50) context.fillStyle = '#ff9500';
             else context.fillStyle = '#ff3b30';
-
+            
             context.shadowBlur = 25;
             context.shadowColor = context.fillStyle;
             context.fillText(scoreStr, textCx, 250);
-
+            
             context.shadowBlur = 8;
             context.shadowColor = '#000000';
             context.font = '20px monospace';
@@ -833,17 +737,13 @@
             let siteUrl = window.location.hostname || 'perfect-circle.game';
             context.fillText(siteUrl, cx, 400);
 
-            context.shadowBlur = 0;
+            context.shadowBlur = 0; 
 
-            // ZAMAN DAMGASI (Sağ Alt Köşe)
             context.textAlign = 'right';
             context.font = '14px monospace';
             context.fillStyle = '#555555';
             const now = new Date();
-            const dateStr = now.toLocaleDateString('tr-TR') + ' ' + now.toLocaleTimeString('tr-TR', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+            const dateStr = now.toLocaleDateString('tr-TR') + ' ' + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
             context.fillText(dateStr, c.width - 20, c.height - 20);
 
             shareImagePreview.src = c.toDataURL('image/png');
@@ -856,30 +756,25 @@
             link.click();
         }
 
-        // --- Social Share Logic ---
         async function shareScore(platform) {
             const text = `I drew a perfect circle and scored ${(currentBestScore || 0).toFixed(1)}%! How good are you?`;
             const url = window.location.href;
-            const shareText = text + '\n\n' + url;
-
+            const shareText = text + '\n\n' + url; 
+            
             if (navigator.canShare) {
                 try {
                     const response = await fetch(shareImagePreview.src);
                     const blob = await response.blob();
-                    const file = new File([blob], 'my-score.png', {
-                        type: 'image/png'
-                    });
-
-                    if (navigator.canShare({
-                            files: [file]
-                        })) {
-                        await navigator.share({
-                            title: 'Perfect Circle Score',
-                            text: shareText,
-                            files: [file]
-                        });
-                        closeShareWindow();
-                        return;
+                    const file = new File([blob], 'my-score.png', { type: 'image/png' });
+                    
+                    if (navigator.canShare({ files: [file] })) {
+                         await navigator.share({
+                             title: 'Perfect Circle Score',
+                             text: shareText, 
+                             files: [file]
+                         });
+                         closeShareWindow();
+                         return; 
                     }
                 } catch (e) {
                     console.log("Native share fallback triggered");
@@ -887,28 +782,14 @@
             }
 
             let shareUrl = '';
-            switch (platform) {
-                case 'whatsapp':
-                    shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
-                    break;
-                case 'twitter':
-                    shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-                    break;
-                case 'facebook':
-                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
-                    break;
-                case 'telegram':
-                    shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
-                    break;
-                case 'linkedin':
-                    shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(url)}&title=${encodeURIComponent('Perfect Circle Score')}&summary=${encodeURIComponent(text)}`;
-                    break;
-                case 'reddit':
-                    shareUrl = `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`;
-                    break;
-                case 'pinterest':
-                    shareUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(url)}&description=${encodeURIComponent(text)}`;
-                    break;
+            switch(platform) {
+                case 'whatsapp': shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`; break;
+                case 'twitter': shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`; break;
+                case 'facebook': shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`; break;
+                case 'telegram': shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`; break;
+                case 'linkedin': shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(url)}&title=${encodeURIComponent('Perfect Circle Score')}&summary=${encodeURIComponent(text)}`; break;
+                case 'reddit': shareUrl = `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`; break;
+                case 'pinterest': shareUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(url)}&description=${encodeURIComponent(text)}`; break;
                 case 'instagram':
                 case 'tiktok':
                 case 'discord':
@@ -918,7 +799,7 @@
             }
             if (shareUrl) window.open(shareUrl, '_blank');
         }
+
     </script>
 </body>
-
 </html>
